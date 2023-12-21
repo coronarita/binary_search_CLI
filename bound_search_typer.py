@@ -1,10 +1,11 @@
 import typer
-from typing import List
+from typing import List, Optional
+from typing_extensions import Annotated
 
 app = typer.Typer()
 
 def bound_search(target: int,
-                 lst: List[int],
+                 lst: Optional[List[int]],
                  compare,):
     
     lo, hi = 0, len(lst)
@@ -15,24 +16,29 @@ def bound_search(target: int,
             hi = mid
         else : 
             lo = mid + 1
-    print(lo)
     return lo
 
 @app.command()
-def lower_bound(target: int=typer.Argument(...),
-                 lst: List[int]=typer.Argument(...),
+def lower_bound(target: Annotated[int, typer.Option(help="The number want to find in list. For example, 2")],
+                 lst: Annotated[Optional[List[int]], typer.Option(help="The list what you guess the target exists, for example : 1 2 2 2 3 5")],
                  ):
+    """ 
+    Find the first index of target in list.
+    """
     lower = lambda x, elem: x <= elem
-    bound_search(target, lst, lower)
-    
+    lo = bound_search(target, lst, lower)
+    print(lo)
     
 @app.command()
-def upper_bound(target: int=typer.Argument(...),
-                 lst: List[int]=typer.Argument(...),
+def upper_bound(target: Annotated[int, typer.Option(help="The number want to find in list. For example, 2")],
+                 lst: Annotated[list, typer.Option(help="The list what you guess the target exists, for example : 1 2 2 2 3 5")],
                  ):
+    """ 
+    Find the last index of target in list.
+    """
     upper = lambda x, elem: x < elem
-    bound_search(target, lst, upper)
-
+    lo = bound_search(target, lst, upper)
+    print(lo+1)
 
 if __name__ == "__main__":
     app()
