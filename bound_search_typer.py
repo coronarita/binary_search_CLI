@@ -2,6 +2,8 @@ import typer
 from typing import List, Optional
 from typing_extensions import Annotated
 
+from parse import parse_list  # 리스트 파싱을 위해 정의했던 함수를 가져옵니다.
+
 app = typer.Typer()
 
 def bound_search(target: int,
@@ -20,7 +22,10 @@ def bound_search(target: int,
 
 @app.command()
 def lower_bound(target: Annotated[int, typer.Option(help="The number want to find in list. For example, 2")],
-                 lst: Annotated[Optional[List[int]], typer.Option(help="The list what you guess the target exists, for example : 1 2 2 2 3 5")],
+                 lst: Annotated[str, 
+                                typer.Option(..., help="The list what you guess the target exists, for example : \"1 2 2 2 3 5\", \"[1, 2, 2, 2, 3, 5]\"",
+                                             callback=parse_list)],
+                 
                  ):
     """ 
     Find the first index of target in list.
@@ -31,14 +36,16 @@ def lower_bound(target: Annotated[int, typer.Option(help="The number want to fin
     
 @app.command()
 def upper_bound(target: Annotated[int, typer.Option(help="The number want to find in list. For example, 2")],
-                 lst: Annotated[list, typer.Option(help="The list what you guess the target exists, for example : 1 2 2 2 3 5")],
+                 lst: Annotated[str,
+                                typer.Option(..., help="The list what you guess the target exists, for example : \"1 2 2 2 3 5\", \"[1, 2, 2, 2, 3, 5]\"",
+                                             callback=parse_list)],
                  ):
     """ 
-    Find the last index of target in list.
+    Find the last index + 1 of target in list.
     """
     upper = lambda x, elem: x < elem
     lo = bound_search(target, lst, upper)
-    print(lo+1)
+    print(lo)
 
 if __name__ == "__main__":
     app()
